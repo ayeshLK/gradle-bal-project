@@ -1,0 +1,64 @@
+// Ballerina API Server subproject build configuration
+
+// Apply base plugin to get standard lifecycle tasks
+plugins {
+    id 'base'
+}
+
+// Define project directories
+def buildConfigDir = rootProject.file('build-config/resources')
+def apiServerDir = projectDir
+
+// Task to process Ballerina.toml template with version substitution
+task updateTomlFiles(type: Copy) {
+    description = 'Process Ballerina.toml files with version templating'
+    
+    def projectVersion = rootProject.version
+    from(buildConfigDir) {
+        include '**/*.toml'
+        filter { line ->
+            line.replace('@toml.version@', projectVersion)
+        }
+    }
+    into apiServerDir
+    
+    inputs.files fileTree(buildConfigDir)
+    inputs.property('projectVersion', projectVersion)
+    outputs.files fileTree(apiServerDir) {
+        include '**/*.toml'
+    }
+}
+
+// Task to clean Ballerina build artifacts
+task cleanBallerina(type: Exec) {
+    description = 'Clean Ballerina build artifacts'
+    
+    workingDir apiServerDir
+    commandLine 'bal', 'clean'
+    ignoreExitValue = true
+}
+
+// Task to build Ballerina project with Docker image
+task buildBallerina(type: Exec) {
+    description = 'Build the Ballerina API server with Docker image'
+    
+    dependsOn updateTomlFiles
+    
+    workingDir apiServerDir
+    commandLine 'bal', 'build', '--cloud=docker'
+    
+    inputs.files fileTree(apiServerDir) {
+        include '**/*.bal'
+        include '**/*.toml'
+    }
+    outputs.dir "${apiServerDir}/target"
+}
+
+
+// Integrate with standard Gradle lifecycle
+build.dependsOn buildBallerina
+
+// Ensure clean removes the target directory
+clean {
+    dependsOn cleanBallerina
+}

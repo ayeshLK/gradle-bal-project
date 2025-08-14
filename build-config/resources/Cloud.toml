@@ -1,0 +1,7 @@
+[container.image]
+repository = "ayeshalmeida"
+name = "apiserver"
+tag = "@toml.version@"
+
+[[cloud.config.files]]
+file = "./Config.toml"
