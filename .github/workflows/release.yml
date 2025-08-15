@@ -87,13 +87,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    #- name: Find distribution artifacts
-    #  id: artifacts
-    #  run: |
-    #    ZIP_FILE=$(find distribution/build/distributions -name "*.zip" | head -n 1)
-    #    JAR_FILE=$(find components/api-server/target/bin -name "*.jar" | head -n 1)
-    #    echo "ZIP_FILE=${ZIP_FILE}" >> $GITHUB_OUTPUT
-    #    echo "JAR_FILE=${JAR_FILE}" >> $GITHUB_OUTPUT
+    - name: Find distribution artifacts
+      id: artifacts
+      run: |
+        ZIP_FILE=$(find distribution/build/distributions -name "*.zip" | head -n 1)
+        JAR_FILE=$(find components/api-server/target/bin -name "*.jar" | head -n 1)
+        echo "ZIP_FILE=${ZIP_FILE}" >> $GITHUB_OUTPUT
+        echo "JAR_FILE=${JAR_FILE}" >> $GITHUB_OUTPUT
     
     - name: GitHub Release and Release Sync PR
       env:
