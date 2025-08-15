@@ -75,17 +75,17 @@ jobs:
     #    format: 'table'
     #    exit-code: '1'
 
-    - name: Run Gradle release
-      run: ./gradlew release -Prelease.useAutomaticVersion=true --no-configuration-cache
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Get Release Version
       id: release_version
       run: |
         VERSION=$((grep -w 'version' | cut -d= -f2) < gradle.properties | rev | cut --complement -d- -f1 | rev)
         echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
         echo "TAG_NAME=v${VERSION}" >> $GITHUB_OUTPUT
+
+    - name: Run Gradle release
+      run: ./gradlew release -Prelease.useAutomaticVersion=true --no-configuration-cache
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Find distribution artifacts
       id: artifacts
@@ -94,29 +94,6 @@ jobs:
         JAR_FILE=$(find components/api-server/target/bin -name "*.jar" | head -n 1)
         echo "ZIP_FILE=${ZIP_FILE}" >> $GITHUB_OUTPUT
         echo "JAR_FILE=${JAR_FILE}" >> $GITHUB_OUTPUT
-
-    - name: Create GitHub Release
-      id: create_release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: ${{ steps.release_version.outputs.TAG_NAME }}
-        name: Ballerina API Server ${{ steps.release_version.outputs.TAG_NAME }}
-        body: |
-          ## What's Changed
-          - Release ${{ steps.release_version.outputs.TAG_NAME }}
-          
-          **Distribution Package:** 
-          - Contains Ballerina API server JAR
-          - Startup scripts for Unix and Windows
-          - Configuration files
-          - Docker image available: `ayeshalmeida/apiserver:${{ steps.release_version.outputs.VERSION }}`
-        files: |
-          ${{ steps.artifacts.outputs.ZIP_FILE }}
-        draft: false
-        prerelease: false
-        make_latest: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push release branch
       run: |
