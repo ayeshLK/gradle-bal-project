@@ -17,7 +17,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'ballerina-platform' || github.repository_owner == github.actor
+    if: github.repository_owner == github.actor
     
     steps:
     - name: Checkout Repository
@@ -87,33 +87,17 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Find distribution artifacts
-      id: artifacts
-      run: |
-        ZIP_FILE=$(find distribution/build/distributions -name "*.zip" | head -n 1)
-        JAR_FILE=$(find components/api-server/target/bin -name "*.jar" | head -n 1)
-        echo "ZIP_FILE=${ZIP_FILE}" >> $GITHUB_OUTPUT
-        echo "JAR_FILE=${JAR_FILE}" >> $GITHUB_OUTPUT
-
-    - name: Push release branch
-      run: |
-        git push origin ${{ env.RELEASE_BRANCH }}
-
-    - name: Create sync PR
+    #- name: Find distribution artifacts
+    #  id: artifacts
+    #  run: |
+    #    ZIP_FILE=$(find distribution/build/distributions -name "*.zip" | head -n 1)
+    #    JAR_FILE=$(find components/api-server/target/bin -name "*.jar" | head -n 1)
+    #    echo "ZIP_FILE=${ZIP_FILE}" >> $GITHUB_OUTPUT
+    #    echo "JAR_FILE=${JAR_FILE}" >> $GITHUB_OUTPUT
+    
+    - name: GitHub Release and Release Sync PR
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
       run: |
-        BASE_BRANCH=${GITHUB_REF##*/}
-        gh pr create --title "[Automated] Sync ${{ env.RELEASE_BRANCH }} after ${{ steps.release_version.outputs.VERSION }} release" \
-                     --body "Sync release branch with base branch after ${{ steps.release_version.outputs.VERSION }} release" \
-                     --base ${BASE_BRANCH} \
-                     --head ${{ env.RELEASE_BRANCH }}
-
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: api-server-release-${{ steps.release_version.outputs.VERSION }}
-        path: |
-          ${{ steps.artifacts.outputs.ZIP_FILE }}
-          ${{ steps.artifacts.outputs.JAR_FILE }}
-        retention-days: 30
+        gh release create v$VERSION --title "API-SERVER-v$VERSION"
+        gh pr create --base ${GITHUB_REF##*/} --title "[Automated] Sync ${GITHUB_REF##*/} after $VERSION release" --body "Sync ${GITHUB_REF##*/} after $VERSION release"
