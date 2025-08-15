@@ -32,18 +32,10 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: Setup Ballerina
+    - name: Set Up Ballerina
       uses: ballerina-platform/setup-ballerina@v1.1.0
       with:
         version: 2201.12.7
-
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
-      with:
-        cache-read-only: false
-
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
 
     - name: Set Git Configs
       run: |
