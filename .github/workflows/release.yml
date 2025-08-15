@@ -9,11 +9,11 @@ on:
         default: false
         type: boolean
 
-permissions:
-  contents: write
-  packages: write
-  actions: read
-  pull-requests: write
+#permissions:
+#  contents: write
+#  packages: write
+#  actions: read
+#  pull-requests: write
 
 jobs:
   release:
