@@ -30,17 +30,16 @@ task buildDistribution {
 
 // Release configuration
 release {
-    failOnCommitNeeded = false
     failOnPublishNeeded = false
     failOnSnapshotDependencies = true
-    failOnUnversionedFiles = false
-    failOnUpdateNeeded = false
-    revertOnFail = true
-    tagTemplate = 'v${version}'
+
+    buildTasks = ['build']
     versionPropertyFile = 'gradle.properties'
-    buildTasks = ['buildDistribution']
+    tagTemplate = 'v$version'
+
     git {
-        requireBranch.set('master')
+        requireBranch = "release-${moduleVersion}"
+        pushToRemote = 'origin'
     }
 }
 
