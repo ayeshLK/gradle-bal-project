@@ -40,7 +40,7 @@ release {
     versionPropertyFile = 'gradle.properties'
     buildTasks = ['buildDistribution']
     git {
-        requireBranch = '(main|master)'
+        requireBranch.set('master')
     }
 }
 
