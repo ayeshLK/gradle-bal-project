@@ -50,22 +50,22 @@ jobs:
         git config --global user.name ${{ github.actor }}
         git config --global user.email ${{ github.actor }}@users.noreply.github.com
 
-    - name: Extract version from gradle.properties
-      id: project_version
-      run: |
-        VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
-        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+    #- name: Extract version from gradle.properties
+    #  id: project_version
+    #  run: |
+    #    VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
+    #    echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
 
-    - name: Pre-release dependency version update
-      run: |
-        echo "Pre-release dependency version update"
-        ./gradlew clean build ${{ inputs.skip_tests && '-x test' || '' }}
+    #- name: Pre-release dependency version update
+    #  run: |
+    #    echo "Pre-release dependency version update"
+    #    ./gradlew clean build ${{ inputs.skip_tests && '-x test' || '' }}
 
-    - name: Create release branch
-      run: |
-        RELEASE_BRANCH="release-${{ steps.project_version.outputs.VERSION }}"
-        git checkout -b $RELEASE_BRANCH
-        echo "RELEASE_BRANCH=${RELEASE_BRANCH}" >> $GITHUB_ENV
+    #- name: Create release branch
+    #  run: |
+    #    RELEASE_BRANCH="release-${{ steps.project_version.outputs.VERSION }}"
+    #    git checkout -b $RELEASE_BRANCH
+    #    echo "RELEASE_BRANCH=${RELEASE_BRANCH}" >> $GITHUB_ENV
 
     #- name: Run vulnerability scan
     #  uses: aquasecurity/trivy-action@master
