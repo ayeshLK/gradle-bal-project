@@ -28,6 +28,8 @@ task buildDistribution {
     dependsOn ':distribution:build'
 }
 
+def packageVersion = project.version.replace("-SNAPSHOT", "")
+
 // Release configuration
 release {
     failOnPublishNeeded = false
@@ -38,7 +40,7 @@ release {
     tagTemplate = 'v$version'
 
     git {
-        requireBranch = "release-${moduleVersion}"
+        requireBranch = "release-${packageVersion}"
         pushToRemote = 'origin'
     }
 }
