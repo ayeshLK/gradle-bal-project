@@ -61,12 +61,6 @@ jobs:
     #    echo "Pre-release dependency version update"
     #    ./gradlew clean build ${{ inputs.skip_tests && '-x test' || '' }}
 
-    #- name: Create release branch
-    #  run: |
-    #    RELEASE_BRANCH="release-${{ steps.project_version.outputs.VERSION }}"
-    #    git checkout -b $RELEASE_BRANCH
-    #    echo "RELEASE_BRANCH=${RELEASE_BRANCH}" >> $GITHUB_ENV
-
     #- name: Run vulnerability scan
     #  uses: aquasecurity/trivy-action@master
     #  with:
@@ -81,6 +75,11 @@ jobs:
         VERSION=$((grep -w 'version' | cut -d= -f2) < gradle.properties | rev | cut --complement -d- -f1 | rev)
         echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
         echo "TAG_NAME=v${VERSION}" >> $GITHUB_OUTPUT
+
+    - name: Create release branch
+      run: |
+        echo "Version: ${VERSION}"
+        git checkout -b release-${VERSION}
 
     - name: Run Gradle release
       run: ./gradlew release -Prelease.useAutomaticVersion=true --no-configuration-cache
