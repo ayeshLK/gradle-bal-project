@@ -39,6 +39,7 @@ release {
     tagTemplate = 'v${version}'
     versionPropertyFile = 'gradle.properties'
     buildTasks = ['buildDistribution']
+    requireBranch = '(main|master)'
 }
 
 // Configure release tasks
