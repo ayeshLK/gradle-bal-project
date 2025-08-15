@@ -80,10 +80,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Get release version
+    - name: Get Release Version
       id: release_version
       run: |
-        VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
+        VERSION=$((grep -w 'version' | cut -d= -f2) < gradle.properties | rev | cut --complement -d- -f1 | rev)
         echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
         echo "TAG_NAME=v${VERSION}" >> $GITHUB_OUTPUT
 
