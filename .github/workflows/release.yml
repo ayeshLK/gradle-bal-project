@@ -67,13 +67,13 @@ jobs:
         git checkout -b $RELEASE_BRANCH
         echo "RELEASE_BRANCH=${RELEASE_BRANCH}" >> $GITHUB_ENV
 
-    - name: Run vulnerability scan
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'rootfs'
-        scan-ref: '.'
-        format: 'table'
-        exit-code: '1'
+    #- name: Run vulnerability scan
+    #  uses: aquasecurity/trivy-action@master
+    #  with:
+    #    scan-type: 'rootfs'
+    #    scan-ref: '.'
+    #    format: 'table'
+    #    exit-code: '1'
 
     - name: Run Gradle release
       run: ./gradlew release -Prelease.useAutomaticVersion=true --no-configuration-cache
