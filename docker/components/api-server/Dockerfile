@@ -14,7 +14,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and install Ballerina
-ARG BALLERINA_VERSION=2201.5.0
+ARG BALLERINA_VERSION=2201.10.5
 ARG BALLERINA_DEB_URL=https://dist.ballerina.io/downloads/${BALLERINA_VERSION}/ballerina-${BALLERINA_VERSION}-swan-lake-linux-x64.deb
 
 RUN curl -L -o /tmp/ballerina.deb ${BALLERINA_DEB_URL} \
@@ -72,4 +72,5 @@ ENV PATH="/usr/lib/ballerina/bin:${PATH}"
 USER ${USER_ID}
 
 # Set the entrypoint
-CMD ["/bin/bash", "${SERVER_HOME}/bin/apiserver.sh"]
+CMD ["sh", "-c", "${SERVER_HOME}/bin/apiserver.sh"]
+
