@@ -69,3 +69,4 @@ jobs:
             SERVER_NAME=${{ env.SERVER_NAME }}
             SERVER_VERSION=${{ env.SERVER_VERSION }}
             SERVER_DIST_PATH=distribution/build/distributions
+            BALLERINA_VERSION=${{ env.BAL_VERSION }}
