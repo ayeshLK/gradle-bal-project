@@ -1,35 +1,35 @@
-// Distribution module for packaging the API server
-
 plugins {
-    id 'base'
     id 'distribution'
 }
 
-// Define directories
-def apiServerProject = project(':api-server')
-def apiServerDir = apiServerProject.projectDir
 def scriptsDir = file('scripts')
 
-// Distribution configuration
 distributions {
-    main {
+    apiServer {
         distributionBaseName = 'api-server'
+        def apiServerDir = project(':api-server').projectDir
+        def confDir = file('conf/api-server')
         contents {
-            // Include the fat JAR from api-server module
+            // Include the fat JAR from hub module
             from("${apiServerDir}/target/bin") {
                 include "*.jar"
                 into "lib"
             }
             
             // Include only Config.toml in conf directory
-            from(apiServerDir) {
+            from(confDir) {
                 include "Config.toml"
                 into "conf"
+            }
+
+            // Include resources in conf directory
+            from("${apiServerDir}/resources") {
+                into "conf/resources"
             }
             
             // Include startup scripts
             from(scriptsDir) {
-                include "**/*"
+                include "*.sh"
                 into "bin"
                 fileMode = 0755
             }
@@ -44,11 +44,7 @@ distributions {
     }
 }
 
-// Ensure distribution depends on api-server build
-distZip.dependsOn ':api-server:buildBallerina'
+apiServerDistZip.dependsOn(':api-server:build')
+apiServerDistTar.enabled = false
 
-// Disable tar distribution - we only want zip
-distTar.enabled = false
-
-// Make build create only zip distribution
-build.dependsOn distZip
+build.dependsOn(apiServerDistZip)
