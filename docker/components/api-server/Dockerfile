@@ -72,4 +72,4 @@ ENV PATH="/usr/lib/ballerina/bin:${PATH}"
 USER ${USER_ID}
 
 # Set the entrypoint
-CMD ["/bin/bash", "${SERVER_HOME}/bin/wso2server.sh"]
+CMD ["/bin/bash", "${SERVER_HOME}/bin/apiserver.sh"]

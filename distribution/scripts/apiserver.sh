@@ -25,7 +25,7 @@ PRG="$0"
 
 while [ -h "$PRG" ]; do
     ls=`ls -ld "$PRG"`
-    link=`expr "$ls" : '.*-> \(.*\)$'`
+    link=`expr "$ls" : '.*-> \(.*\)`
     if expr "$link" : '.*/.*' > /dev/null; then
         PRG="$link"
     else
@@ -39,29 +39,13 @@ BASE_DIR=`cd "$PRGDIR/.." ; pwd`
 LIB_DIR="$BASE_DIR/lib"
 CONF_DIR="$BASE_DIR/conf"
 
-# Validate Java installation
-if [ -n "$JAVA_HOME" ]; then
-    if [ -x "$JAVA_HOME/jre/sh/java" ]; then
-        # IBM's JDK on AIX uses strange locations for the executables
-        JAVACMD="$JAVA_HOME/jre/sh/java"
-    else
-        JAVACMD="$JAVA_HOME/bin/java"
-    fi
-    if [ ! -x "$JAVACMD" ]; then
-        echo "Error: JAVA_HOME is set to an invalid directory: $JAVA_HOME"
-        echo "Please set the JAVA_HOME variable in your environment to match the"
-        echo "location of your Java installation."
-        exit 1
-    fi
-else
-    JAVACMD="java"
-    which java >/dev/null 2>&1 || {
-        echo "Error: JAVA_HOME is not set and no 'java' command could be found in your PATH."
-        echo "Please set the JAVA_HOME variable in your environment to match the"
-        echo "location of your Java installation."
-        exit 1
-    }
-fi
+# Validate Ballerina installation
+BAL_CMD="bal"
+which $BAL_CMD >/dev/null 2>&1 || {
+    echo "Error: 'bal' command could not be found in your PATH."
+    echo "Please install Ballerina and ensure it is in your PATH."
+    exit 1
+}
 
 # Find the JAR file
 JAR_FILE=$(find "$LIB_DIR" -name "*.jar" | head -n 1)
@@ -71,11 +55,9 @@ if [ -z "$JAR_FILE" ]; then
     exit 1
 fi
 
-echo "Starting API Server..."
-echo "Using JAVA_HOME: ${JAVA_HOME:-system}"
-echo "Java executable: $JAVACMD"
+echo "Starting WSO2 Server..."
 echo "JAR: $JAR_FILE"
 echo "Config: $CONF_DIR/Config.toml"
 
-# Run the JAR with Ballerina configuration set only for this command
-exec env BAL_CONFIG_FILES="$CONF_DIR/Config.toml" "$JAVACMD" -jar "$JAR_FILE"
+# Run the Ballerina module with configuration
+exec env BAL_CONFIG_FILES="$CONF_DIR/Config.toml" "$BAL_CMD" run "$JAR_FILE"

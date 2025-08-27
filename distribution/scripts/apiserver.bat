@@ -17,54 +17,41 @@
 @REM ---------------------------------------------------------------------------
 
 @echo off
-rem Ballerina API Server startup script for Windows
+rem Ballerina API Server startup script
 rem This script starts the Ballerina API server
 
-setlocal EnableDelayedExpansion
+rem Get standard environment variables
+set "PRGDIR=%~dp0"
+for %%F in ("%PRGDIR%..") do set "BASE_DIR=%%~fF"
+set "LIB_DIR=%BASE_DIR%\lib"
+set "CONF_DIR=%BASE_DIR%\conf"
 
-rem Get base directories
-set SCRIPT_DIR=%~dp0
-set BASE_DIR=%SCRIPT_DIR%..
-set LIB_DIR=%BASE_DIR%\lib
-set CONF_DIR=%BASE_DIR%\conf
-
-rem Validate Java installation
-if not "%JAVA_HOME%" == "" goto gotJavaHome
-echo Error: JAVA_HOME is not set and no 'java' command could be found in your PATH.
-echo Please set the JAVA_HOME variable in your environment to match the
-echo location of your Java installation.
-goto error
-
-:gotJavaHome
-if exist "%JAVA_HOME%\bin\java.exe" goto okJavaHome
-echo Error: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
-echo Please set the JAVA_HOME variable in your environment to match the
-echo location of your Java installation.
-goto error
-
-:okJavaHome
-set JAVACMD="%JAVA_HOME%\bin\java.exe"
+rem Validate Ballerina installation
+where bal >nul 2>nul
+if %errorlevel% neq 0 (
+    echo Error: 'bal' command could not be found in your PATH.
+    echo Please install Ballerina and ensure it is in your PATH.
+    exit /b 1
+)
+set "BAL_CMD=bal"
 
 rem Find the JAR file
-for %%f in ("%LIB_DIR%\*.jar") do set JAR_FILE=%%f
+set "JAR_FILE="
+for /f "delims=" %%F in ('dir /b /s "%LIB_DIR%\*.jar"') do (
+    set "JAR_FILE=%%F"
+    goto jar_found
+)
 
+:jar_found
 if not defined JAR_FILE (
     echo Error: No JAR file found in %LIB_DIR%
-    goto error
+    exit /b 1
 )
 
 echo Starting API Server...
-echo Using JAVA_HOME: %JAVA_HOME%
-echo Java executable: %JAVACMD%
 echo JAR: %JAR_FILE%
 echo Config: %CONF_DIR%\Config.toml
 
-rem Run the JAR with Ballerina configuration set only for this command
-set BAL_CONFIG_FILES=%CONF_DIR%\Config.toml && %JAVACMD% -jar "%JAR_FILE%"
-goto end
-
-:error
-exit /b 1
-
-:end
-exit /b 0
+rem Run the Ballerina module with configuration
+set "BAL_CONFIG_FILES=%CONF_DIR%\Config.toml"
+"%BAL_CMD%" run "%JAR_FILE%"
