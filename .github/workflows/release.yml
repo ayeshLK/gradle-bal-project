@@ -71,7 +71,7 @@ jobs:
     - name: Run Gradle release
       run: |
         ./gradlew clean release -Prelease.useAutomaticVersion=true
-        ./gradlew -Pversion=${VERSION} publish -x test
+        ./gradlew -Pversion=${VERSION} publish
       env:
         publishUser: ${{ github.actor }}
         publishPAT: ${{ secrets.GITHUB_TOKEN }}
