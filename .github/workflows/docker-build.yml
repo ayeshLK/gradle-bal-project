@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.release_version }}
+          ref: v${{ github.event.inputs.release_version }}
 
       - name: Get Ballerina Version
         run: |
