@@ -56,6 +56,7 @@ class WebsubhubBallerinaComponentPlugin implements Plugin<Project> {
             dependsOn project.tasks.named('updateTomlFiles')
             doLast {
                 project.exec {
+                    workingDir project.projectDir
                     ignoreExitValue true
                     if (OperatingSystem.current().isWindows()) {
                         commandLine 'cmd', '/c', "git add Ballerina.toml Cloud.toml Dependencies.toml && git commit -m \"[Automated] Updating package versions\""
