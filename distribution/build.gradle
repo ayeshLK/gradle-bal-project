@@ -1,5 +1,6 @@
 plugins {
     id 'distribution'
+    id 'maven-publish'
 }
 
 def scriptsDir = file('scripts')
@@ -39,6 +40,25 @@ distributions {
                 include "README.md"
                 include "LICENSE*"
                 into ""
+            }
+        }
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifact(tasks.getByName("apiServerDistZip"))
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/ballerina-platform/module-${packageOrg}-${packageName}")
+            credentials {
+                username = System.getenv("publishUser")
+                password = System.getenv("publishPAT")
             }
         }
     }
