@@ -52,33 +52,17 @@ jobs:
         git config --global user.name ${{ github.actor }}
         git config --global user.email ${{ github.actor }}@users.noreply.github.com
 
-    #- name: Extract version from gradle.properties
-    #  id: project_version
-    #  run: |
-    #    VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
-    #    echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
-
-    #- name: Pre-release dependency version update
-    #  run: |
-    #    echo "Pre-release dependency version update"
-    #    ./gradlew clean build ${{ inputs.skip_tests && '-x test' || '' }}
-
-    #- name: Run vulnerability scan
-    #  uses: aquasecurity/trivy-action@master
-    #  with:
-    #    scan-type: 'rootfs'
-    #    scan-ref: '.'
-    #    format: 'table'
-    #    exit-code: '1'
-
     - name: Get Release Version
       id: release_version
       run: echo "VERSION=$((grep -w 'version' | cut -d= -f2) < gradle.properties | rev | cut --complement -d- -f1 | rev)" >> $GITHUB_ENV
 
-    - name: Create release branch
-      run: |
-        echo "Version: ${VERSION}"
-        git checkout -b release-${VERSION}
+    # - name: Create release branch
+    #   run: |
+    #     echo "Version: ${VERSION}"
+    #     git checkout -b release-${VERSION}
+
+    # - name: Push release branch
+    #   run: git push origin release-${VERSION}
 
     - name: Run Gradle release
       run: ./gradlew release -Prelease.useAutomaticVersion=true --no-configuration-cache
