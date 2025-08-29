@@ -1,7 +1,7 @@
 [container.image]
 repository = "ayeshalmeida"
 name = "apiserver"
-tag = "0.2.4-SNAPSHOT"
+tag = "0.2.5-SNAPSHOT"
 
 [[cloud.config.files]]
 file = "./Config.toml"
