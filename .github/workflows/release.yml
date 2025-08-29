@@ -138,6 +138,6 @@ jobs:
       - name: Trigger Docker Build
         uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: 'docker-build.yml'
+          workflow: Build and Push Hub Docker Image
           token: ${{ steps.app-token.outputs.token }}
           inputs: '{"release_version": "${{ needs.release.outputs.VERSION }}"}'
