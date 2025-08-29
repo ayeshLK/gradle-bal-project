@@ -65,9 +65,6 @@ jobs:
         echo "Version: ${VERSION}"
         git checkout -b release-${VERSION}
 
-    # - name: Push release branch
-    #   run: git push origin release-${VERSION}
-
     - name: Run Gradle release
       run: |
         ./gradlew clean release -Prelease.useAutomaticVersion=true
@@ -76,6 +73,34 @@ jobs:
         publishUser: ${{ github.actor }}
         publishPAT: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    # Set up Docker Buildx (for cross-platform builds, caching, etc.)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+      # Build and push image
+    - name: Get Server Name
+      run: |
+        echo "SERVER_NAME=api-server" >> $GITHUB_ENV
+        echo "Server Name: api-server"
+    
+    - name: Get Server Version
+      run: |
+        SERVER_VERSION=${VERSION}
+    
+    # Build and push image
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: docker/components/api-server/Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/api-server:latest
+        build-args: |
+          SERVER_NAME=${{ env.SERVER_NAME }}
+          SERVER_VERSION=${{ env.SERVER_VERSION }}
+          SERVER_DIST_PATH=distribution/build/distributions
+          BALLERINA_VERSION=${{ env.BAL_VERSION }}
 
     - uses: actions/create-github-app-token@v2
       id: app-token
