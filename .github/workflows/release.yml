@@ -76,7 +76,13 @@ jobs:
         publishUser: ${{ github.actor }}
         publishPAT: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
+
+    - uses: actions/create-github-app-token@v2
+      id: app-token
+      with:
+        app-id: ${{ secrets.RELEASE_SYNC_BOT_ID }}
+        private-key: ${{ secrets.RELEASE_SYNC_PRIVATE_KEY }}
+
     - name: GitHub Release and Release Sync PR
       env:
         GH_TOKEN: ${{ github.token }}
