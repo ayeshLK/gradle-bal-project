@@ -73,8 +73,7 @@ jobs:
         publishUser: ${{ github.actor }}
         publishPAT: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    # Set up Docker Buildx (for cross-platform builds, caching, etc.)
+      # Set up Docker Buildx (for cross-platform builds, caching, etc.)
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -83,12 +82,12 @@ jobs:
       run: |
         echo "SERVER_NAME=api-server" >> $GITHUB_ENV
         echo "Server Name: api-server"
-    
     - name: Get Server Version
       run: |
         SERVER_VERSION=${VERSION}
-    
-    # Build and push image
+        echo "SERVER_VERSION=$SERVER_VERSION" >> $GITHUB_ENV
+        echo "Server Version: $SERVER_VERSION"
+        
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
       with:
