@@ -85,7 +85,7 @@ jobs:
 
     - name: GitHub Release and Release Sync PR
       env:
-        GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
       run: |
         gh release create v$VERSION --title "API-SERVER-v$VERSION"
         gh pr create --base ${GITHUB_REF##*/} --title "[Automated] Sync ${GITHUB_REF##*/} after $VERSION release" --body "Sync ${GITHUB_REF##*/} after $VERSION release"
