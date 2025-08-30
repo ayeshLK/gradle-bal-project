@@ -129,6 +129,8 @@ jobs:
   trigger-docker-build:
     needs: release
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
     steps:
       - uses: actions/create-github-app-token@v2
         id: app-token
