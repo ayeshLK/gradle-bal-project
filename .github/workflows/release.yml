@@ -114,9 +114,10 @@ jobs:
       - name: Discover Components
         id: components
         run: |
-          COMPONENTS=$(find components -maxdepth 1 -type d -not -path components | sed 's|components/||' | tr '\n' ' ')
+          COMPONENTS=$(find components -maxdepth 1 -type d -not -path components | sed 's|components/||' | tr '\n' ' ' | sed 's/ $//')
           echo "components=${COMPONENTS}" >> $GITHUB_OUTPUT
-          echo "Found components: ${COMPONENTS}"
+          echo "Found components: '${COMPONENTS}'"
+          echo "Component count: $(echo ${COMPONENTS} | wc -w)"
 
       - name: Build and Push Docker Images
         run: |
@@ -174,11 +175,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Discover Components for Trigger
+        run: |
+          COMPONENTS=$(find components -maxdepth 1 -type d -not -path components | sed 's|components/||' | tr '\n' ' ' | sed 's/ $//')
+          echo "Available components: '${COMPONENTS}'"
+          if [ -z "${COMPONENTS}" ]; then
+            echo "No components found to trigger"
+            exit 0
+          fi
+          echo "COMPONENTS=${COMPONENTS}" >> $GITHUB_ENV
+
       - name: Trigger Docker Build Workflows
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          for component in ${{ steps.components.outputs.components }}; do
+          for component in ${COMPONENTS}; do
             if [ -f "docker/components/${component}/Dockerfile" ]; then
               echo "Triggering Docker build for component: ${component}"
               gh workflow run docker-build.yml \
