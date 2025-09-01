@@ -162,15 +162,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Create GitHub App Token
-        uses: actions/create-github-app-token@v2
-        id: app-token
-        with:
-          app-id: ${{ secrets.RELEASE_SYNC_BOT_ID }}
-          private-key: ${{ secrets.RELEASE_SYNC_PRIVATE_KEY }}
+      # - name: Create GitHub App Token
+      #   uses: actions/create-github-app-token@v2
+      #   id: app-token
+      #   with:
+      #     app-id: ${{ secrets.RELEASE_SYNC_BOT_ID }}
+      #     private-key: ${{ secrets.RELEASE_SYNC_PRIVATE_KEY }}
 
       - name: Trigger Docker Build Workflow
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh workflow run docker-build.yml -f release_version="${{ needs.prepare.outputs.version }}"
