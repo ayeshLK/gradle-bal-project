@@ -111,22 +111,34 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/components/api-server/Dockerfile
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/api-server:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/api-server:${{ needs.prepare.outputs.version }}
-          build-args: |
-            SERVER_NAME=api-server
-            SERVER_VERSION=${{ needs.prepare.outputs.version }}
-            SERVER_DIST_PATH=distribution/build/distributions
-            BALLERINA_VERSION=${{ needs.prepare.outputs.ballerina-version }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Discover Components
+        id: components
+        run: |
+          COMPONENTS=$(find components -maxdepth 1 -type d -not -path components | sed 's|components/||' | tr '\n' ' ')
+          echo "components=${COMPONENTS}" >> $GITHUB_OUTPUT
+          echo "Found components: ${COMPONENTS}"
+
+      - name: Build and Push Docker Images
+        run: |
+          for component in ${{ steps.components.outputs.components }}; do
+            if [ -f "docker/components/${component}/Dockerfile" ]; then
+              echo "Building Docker image for component: ${component}"
+              docker buildx build \
+                --context . \
+                --file docker/components/${component}/Dockerfile \
+                --push \
+                --tag ${{ secrets.DOCKERHUB_USERNAME }}/${component}:latest \
+                --tag ${{ secrets.DOCKERHUB_USERNAME }}/${component}:${{ needs.prepare.outputs.version }} \
+                --build-arg SERVER_NAME=${component} \
+                --build-arg SERVER_VERSION=${{ needs.prepare.outputs.version }} \
+                --build-arg SERVER_DIST_PATH=distribution/build/distributions \
+                --build-arg BALLERINA_VERSION=${{ needs.prepare.outputs.ballerina-version }} \
+                --cache-from type=gha \
+                --cache-to type=gha,mode=max
+            else
+              echo "No Dockerfile found for component: ${component}, skipping..."
+            fi
+          done
 
       - name: Create GitHub App Token
         uses: actions/create-github-app-token@v2
@@ -162,8 +174,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Trigger Docker Build Workflow
+      - name: Trigger Docker Build Workflows
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh workflow run docker-build.yml -f release_version="${{ needs.prepare.outputs.version }}"
+          for component in ${{ steps.components.outputs.components }}; do
+            if [ -f "docker/components/${component}/Dockerfile" ]; then
+              echo "Triggering Docker build for component: ${component}"
+              gh workflow run docker-build.yml \
+                -f release_version="${{ needs.prepare.outputs.version }}" \
+                -f component_name="${component}"
+            else
+              echo "No Dockerfile found for component: ${component}, skipping workflow trigger..."
+            fi
+          done

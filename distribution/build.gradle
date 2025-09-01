@@ -65,7 +65,7 @@ distributions {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'org.ayeshlk'
+            groupId = 'io.ayeshlk'
             artifactId = 'api-server-distribution'
             artifact(tasks.getByName("apiServerDistributionDistZip"))
         }
