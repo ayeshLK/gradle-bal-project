@@ -1,7 +1,7 @@
 [package]
 org = "ayesh"
 name = "apiserver"
-version = "0.2.20"
+version = "0.2.21-SNAPSHOT"
 license = ["Apache-2.0"]
 distribution = "2201.12.7"
 
