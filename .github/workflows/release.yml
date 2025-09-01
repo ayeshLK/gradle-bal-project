@@ -124,7 +124,6 @@ jobs:
             if [ -f "docker/components/${component}/Dockerfile" ]; then
               echo "Building Docker image for component: ${component}"
               docker buildx build \
-                --context . \
                 --file docker/components/${component}/Dockerfile \
                 --push \
                 --tag ${{ secrets.DOCKERHUB_USERNAME }}/${component}:latest \
@@ -134,7 +133,8 @@ jobs:
                 --build-arg SERVER_DIST_PATH=distribution/build/distributions \
                 --build-arg BALLERINA_VERSION=${{ needs.prepare.outputs.ballerina-version }} \
                 --cache-from type=gha \
-                --cache-to type=gha,mode=max
+                --cache-to type=gha,mode=max \
+                .
             else
               echo "No Dockerfile found for component: ${component}, skipping..."
             fi
