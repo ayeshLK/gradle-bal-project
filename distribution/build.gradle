@@ -43,12 +43,31 @@ distributions {
             }
         }
     }
+    
+    apiServerDistribution {
+        distributionBaseName = 'api-server-distribution'
+        contents {
+            // Include the api-server distribution zip
+            from(apiServerDistZip.outputs.files) {
+                into ""
+            }
+            
+            // Include any top-level documentation
+            from(rootProject.projectDir) {
+                include "README.md"
+                include "LICENSE*"
+                into ""
+            }
+        }
+    }
 }
 
 publishing {
     publications {
         maven(MavenPublication) {
-            artifact(tasks.getByName("apiServerDistZip"))
+            groupId = 'org.ayeshlk'
+            artifactId = 'api-server-distribution'
+            artifact(tasks.getByName("apiServerDistributionDistZip"))
         }
     }
 
@@ -67,4 +86,7 @@ publishing {
 apiServerDistZip.dependsOn(':api-server:build')
 apiServerDistTar.enabled = false
 
-build.dependsOn(apiServerDistZip)
+apiServerDistributionDistZip.dependsOn(apiServerDistZip)
+apiServerDistributionDistTar.enabled = false
+
+build.dependsOn(apiServerDistributionDistZip)
