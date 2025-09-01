@@ -10,7 +10,7 @@ distribution-version = "2201.10.5"
 [[package]]
 org = "ayesh"
 name = "apiserver"
-version = "0.2.18-SNAPSHOT"
+version = "0.2.18"
 dependencies = [
 	{org = "ballerina", name = "http"},
 	{org = "ballerinai", name = "observe"}
