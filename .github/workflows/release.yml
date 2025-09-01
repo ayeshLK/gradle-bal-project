@@ -125,24 +125,8 @@ jobs:
       run: |
         gh release create v$VERSION --title "API-SERVER-v$VERSION"
         gh pr create --base ${GITHUB_REF##*/} --title "[Automated] Sync ${GITHUB_REF##*/} after $VERSION release" --body "Sync ${GITHUB_REF##*/} after $VERSION release"
-
-  trigger-docker-build:
-    needs: release
-    runs-on: ubuntu-latest
-    permissions:
-      actions: write
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      
-      - uses: actions/create-github-app-token@v2
-        id: app-token
-        with:
-          app-id: ${{ secrets.RELEASE_SYNC_BOT_ID }}
-          private-key: ${{ secrets.RELEASE_SYNC_PRIVATE_KEY }}
-      
-      - name: Trigger Docker Build
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: |
-          gh workflow run docker-build.yml -f release_version="${{ needs.release.outputs.VERSION }}"
+    - name: Trigger Docker Build
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      run: |
+          gh workflow run docker-build.yml -f release_version="$VERSION"
