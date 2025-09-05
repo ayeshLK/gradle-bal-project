@@ -10,7 +10,7 @@ jobs:
     name: Build on Ubuntu
     runs-on: ubuntu-22.04
     
-    if: github.repository_owner == 'wso2'
+    if: github.repository_owner == github.actor
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
