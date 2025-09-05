@@ -87,6 +87,11 @@ jobs:
           else
             ./gradlew build
           fi
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: components/**/target/bin
 
   trivy-scan:
     name: Trivy Vulnerability Scan
@@ -96,8 +101,7 @@ jobs:
     strategy:
       matrix:
         scan-path:
-          - "components/websubhub/target/bin"
-          - "components/websubhub-consolidator/target/bin"
+          - "components/api-server/target/bin"
     steps:
       - name: Download build output
         uses: actions/download-artifact@v5
