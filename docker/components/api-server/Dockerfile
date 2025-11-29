@@ -13,14 +13,6 @@ RUN apt-get update \
         unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and install Ballerina
-ARG BALLERINA_VERSION=2201.10.5
-ARG BALLERINA_DEB_URL=https://dist.ballerina.io/downloads/${BALLERINA_VERSION}/ballerina-${BALLERINA_VERSION}-swan-lake-linux-x64.deb
-
-RUN curl -L -o /tmp/ballerina.deb ${BALLERINA_DEB_URL} \
-    && dpkg -i /tmp/ballerina.deb \
-    && rm /tmp/ballerina.deb
-
 # Copy and unzip the distribution
 ARG SERVER_NAME=api-server
 ARG SERVER_VERSION=0.1.0-SNAPSHOT
@@ -50,9 +42,6 @@ ARG MOTD='printf "\n\ Welcome to WSO2 Docker Resources \n\ ---------------------
 RUN groupadd --system --gid ${USER_GROUP_ID} ${USER_GROUP} \
     && useradd --system --uid ${USER_ID} --gid ${USER_GROUP_ID} -m --home-dir ${USER_HOME} ${USER} \
     && echo ${MOTD} > "/etc/profile.d/motd.sh"
-
-# Copy Ballerina installation from the build stage
-COPY --from=build /usr/lib/ballerina /usr/lib/ballerina
 
 # Set up working directory
 WORKDIR ${USER_HOME}
