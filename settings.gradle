@@ -21,10 +21,10 @@ plugins {
 
 rootProject.name = 'gradle-bal-project'
 
-include ':api-server'
+include ':apiserver-workspace'
 include ':distribution'
 
-project(':api-server').projectDir = file("components${File.separator}api-server")
+project(':apiserver-workspace').projectDir = file("components")
 project(':distribution').projectDir = file("distribution")
 
 gradleEnterprise {

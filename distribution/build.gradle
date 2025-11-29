@@ -4,15 +4,15 @@ plugins {
 }
 
 def scriptsDir = file('scripts')
+def componentsDir = project(':apiserver-workspace').projectDir
 
 distributions {
     apiServer {
         distributionBaseName = 'api-server'
-        def apiServerDir = project(':api-server').projectDir
         def confDir = file('conf/api-server')
         contents {
             // Include the fat JAR from hub module
-            from("${apiServerDir}/target/bin") {
+            from("${componentsDir}/api-server/target/bin") {
                 include "*.jar"
                 into "lib"
             }
@@ -24,7 +24,7 @@ distributions {
             }
 
             // Include resources in conf directory
-            from("${apiServerDir}/resources") {
+            from("${componentsDir}/api-server/resources") {
                 into "conf/resources"
             }
             
@@ -83,7 +83,7 @@ publishing {
     }
 }
 
-apiServerDistZip.dependsOn(':api-server:build')
+apiServerDistZip.dependsOn(':apiserver-workspace:build')
 apiServerDistTar.enabled = false
 
 apiServerDistributionDistZip.dependsOn(apiServerDistZip)
