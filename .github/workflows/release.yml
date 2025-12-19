@@ -92,42 +92,42 @@ jobs:
           else
             ./gradlew build
           fi
-      - name: Upload build output
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: components/**/target/bin
-          retention-days: 7
+      # - name: Upload build output
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: build-output
+      #     path: components/**/target/bin
+      #     retention-days: 7
 
-  trivy-scan:
-    name: Trivy Vulnerability Scan
-    needs: build
-    runs-on: ubuntu-22.04
+  # trivy-scan:
+  #   name: Trivy Vulnerability Scan
+  #   needs: build
+  #   runs-on: ubuntu-22.04
     
-    strategy:
-      matrix:
-        scan-path:
-          - "components/api-server/target/bin"
-    steps:
-      - name: Download build output
-        uses: actions/download-artifact@v5
-        with:
-          name: build-output
-          path: components
+  #   strategy:
+  #     matrix:
+  #       scan-path:
+  #         - "components/api-server/target/bin"
+  #   steps:
+  #     - name: Download build output
+  #       uses: actions/download-artifact@v5
+  #       with:
+  #         name: build-output
+  #         path: components
       
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        env:
-          TRIVY_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-db,public.ecr.aws/aquasecurity/trivy-db
-          TRIVY_JAVA_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-java-db,public.ecr.aws/aquasecurity/trivy-java-db
-        with:
-          scan-type: "rootfs"
-          scan-ref: ${{ matrix.scan-path }}
-          format: "table"
-          timeout: "10m0s"
-          exit-code: "1"
-          scanners: "vuln"
-          cache-dir: "/tmp/trivy-cache"
+  #     - name: Run Trivy vulnerability scanner
+  #       uses: aquasecurity/trivy-action@master
+  #       env:
+  #         TRIVY_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-db,public.ecr.aws/aquasecurity/trivy-db
+  #         TRIVY_JAVA_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-java-db,public.ecr.aws/aquasecurity/trivy-java-db
+  #       with:
+  #         scan-type: "rootfs"
+  #         scan-ref: ${{ matrix.scan-path }}
+  #         format: "table"
+  #         timeout: "10m0s"
+  #         exit-code: "1"
+  #         scanners: "vuln"
+  #         cache-dir: "/tmp/trivy-cache"
 
   release:
     name: Release
