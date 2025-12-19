@@ -221,7 +221,7 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           gh release create v${{ needs.prepare.outputs.version }} \
-            --title "WSO2 Integrator: WebSubHub v${{ needs.prepare.outputs.version }}" \
+            --title "API Server v${{ needs.prepare.outputs.version }}" \
             --notes "$(cat <<EOF
           ## Downloads
 
